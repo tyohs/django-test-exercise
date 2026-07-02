@@ -57,7 +57,7 @@ def update(request, task_id):
         'task': task,
     }
     return render(request, 'todo/edit.html', context)
-  def close(request, task_id):
+def close(request, task_id):
     try:
         task = Task.objects.get(pk=task_id)
     except Task.DoesNotExist:
