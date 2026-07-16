@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE|default:'ja' }}">
+
+  <head>
+    <title>{% block title %}To Do Application{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="author" content="INIAD">
+    <link rel="stylesheet" href="{% static 'todo/style.css' %}">
+    <style>
+      .lang-switcher {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .lang-switcher form {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        border: 0;
+      }
+
+      .lang-switcher button {
+        min-width: 56px;
+        padding: 8px 14px;
+        background: #ffffff;
+        color: #243042;
+        border: 1px solid #c7d0dd;
+      }
+
+      .lang-switcher button.is-active {
+        color: #ffffff;
+        background: #2563eb;
+        border-color: #2563eb;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="lang-switcher">
+      <form action="{% url 'set_language' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <input type="hidden" name="language" value="en">
+        <button class="{% if request.LANGUAGE_CODE == 'en' %}is-active{% endif %}" type="submit">EN</button>
+      </form>
+      <form action="{% url 'set_language' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <input type="hidden" name="language" value="ja">
+        <button class="{% if request.LANGUAGE_CODE == 'ja' %}is-active{% endif %}" type="submit">JP</button>
+      </form>
+    </div>
+
+    {% block content %}{% endblock %}
+  </body>
+
+</html>

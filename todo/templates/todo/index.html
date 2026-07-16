@@ -1,80 +1,77 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ja">
+{% extends "todo/base.html" %}
 
-  <head>
-    <title>To Do Application</title>
-    <meta charset="UTF-8">
-    <meta name="author" content="INIAD">
-    <link rel="stylesheet" href="{% static 'todo/style.css' %}">
-  </head>
+{% block title %}To Do Application{% endblock %}
 
-  <body>
+{% block content %}
+  {% if request.LANGUAGE_CODE == 'ja' %}
+    <h1>サンプル ToDo アプリケーション</h1>
+    <p>以下のフォームからタスクを追加できます。</p>
+  {% else %}
     <h1>Sample To Do Application</h1>
     <p>You can submit tasks from the following form.</p>
-    <form action="{% url 'index' %}" method="post">
-      {% csrf_token %}
-      <div>
-        <label for="titleInput">Title</label><br>
-        <input id="titleInput" name="title" type="text" placeholder="Input title">
-      </div>
-      <div>
-        <label for="dueInput">Due at:</label><br>
-        <input id="dueInput" name="due_at" type="datetime-local">
-      </div>
-      <div>
-        <button type="submit">Submit</button>
-      </div>
-    </form>
-    <br>
+  {% endif %}
 
-    <form action="{% url 'index' %}" method="get">
-      <div>
-        <label for="searchInput">Search</label><br>
-        <input id="searchInput" name="q" type="search" value="{{ query }}" placeholder="Search by title">
-      </div>
-      <div>
-        <label for="statusInput">Status</label><br>
-        <select id="statusInput" name="status">
-          <option value="all" {% if status == 'all' %}selected{% endif %}>All</option>
-          <option value="incomplete" {% if status == 'incomplete' %}selected{% endif %}>Not Completed</option>
-          <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
-          <option value="overdue" {% if status == 'overdue' %}selected{% endif %}>Overdue</option>
-        </select>
-      </div>
-      <div>
-        <label for="orderInput">Sort</label><br>
-        <select id="orderInput" name="order">
-          <option value="post" {% if order == 'post' %}selected{% endif %}>Posted Date</option>
-          <option value="due" {% if order == 'due' %}selected{% endif %}>Due Date</option>
-        </select>
-      </div>
-      <button type="submit">Apply</button>
-    </form>
-
-    {% if blank_task_count %}
-    <form action="{% url 'delete_blank' %}" method="post" style="margin-top: 1rem;">
-      {% csrf_token %}
-      <button type="submit">Delete {{ blank_task_count }} untitled task{% if blank_task_count != 1 %}s{% endif %}</button>
-    </form>
-    {% endif %}
-
-    {% for task in tasks %}
-    <div class="text">
-      <h2><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h2>
-      <ul>
-        <li>Posted at: {{ task.posted_at }}</li>
-        {% if task.due_at %} 
-        <li>Due at: {{ task.due_at }}</li>
-        {% endif %}
-        {% if task.completed %} 
-        <li>Status: Completed</li>
-        {% else %}
-        <li>Status: Not Completed</li>
-        {% endif %}
-      </ul>
+  <form action="{% url 'index' %}" method="post">
+    {% csrf_token %}
+    <div>
+      <label for="titleInput">{% if request.LANGUAGE_CODE == 'ja' %}タイトル{% else %}Title{% endif %}</label><br>
+      <input id="titleInput" name="title" type="text" placeholder="{% if request.LANGUAGE_CODE == 'ja' %}タイトルを入力{% else %}Input title{% endif %}">
     </div>
-    {% endfor %}
-  </body>
+    <div>
+      <label for="dueInput">{% if request.LANGUAGE_CODE == 'ja' %}期限{% else %}Due at{% endif %}</label><br>
+      <input id="dueInput" name="due_at" type="datetime-local">
+    </div>
+    <div>
+      <button type="submit">{% if request.LANGUAGE_CODE == 'ja' %}登録{% else %}Submit{% endif %}</button>
+    </div>
+  </form>
+  <br>
 
-</html>
+  <form action="{% url 'index' %}" method="get">
+    <div>
+      <label for="searchInput">{% if request.LANGUAGE_CODE == 'ja' %}検索{% else %}Search{% endif %}</label><br>
+      <input id="searchInput" name="q" type="search" value="{{ query }}" placeholder="{% if request.LANGUAGE_CODE == 'ja' %}タイトルで検索{% else %}Search by title{% endif %}">
+    </div>
+    <div>
+      <label for="statusInput">{% if request.LANGUAGE_CODE == 'ja' %}状態{% else %}Status{% endif %}</label><br>
+      <select id="statusInput" name="status">
+        <option value="all" {% if status == 'all' %}selected{% endif %}>{% if request.LANGUAGE_CODE == 'ja' %}すべて{% else %}All{% endif %}</option>
+        <option value="incomplete" {% if status == 'incomplete' %}selected{% endif %}>{% if request.LANGUAGE_CODE == 'ja' %}未完了{% else %}Not Completed{% endif %}</option>
+        <option value="completed" {% if status == 'completed' %}selected{% endif %}>{% if request.LANGUAGE_CODE == 'ja' %}完了{% else %}Completed{% endif %}</option>
+        <option value="overdue" {% if status == 'overdue' %}selected{% endif %}>{% if request.LANGUAGE_CODE == 'ja' %}期限切れ{% else %}Overdue{% endif %}</option>
+      </select>
+    </div>
+    <div>
+      <label for="orderInput">{% if request.LANGUAGE_CODE == 'ja' %}並び替え{% else %}Sort{% endif %}</label><br>
+      <select id="orderInput" name="order">
+        <option value="post" {% if order == 'post' %}selected{% endif %}>{% if request.LANGUAGE_CODE == 'ja' %}投稿日時順{% else %}Posted Date{% endif %}</option>
+        <option value="due" {% if order == 'due' %}selected{% endif %}>{% if request.LANGUAGE_CODE == 'ja' %}期限順{% else %}Due Date{% endif %}</option>
+      </select>
+    </div>
+    <button type="submit">{% if request.LANGUAGE_CODE == 'ja' %}適用{% else %}Apply{% endif %}</button>
+  </form>
+
+  {% if blank_task_count %}
+  <form action="{% url 'delete_blank' %}" method="post" style="margin-top: 1rem;">
+    {% csrf_token %}
+    <button type="submit">{% if request.LANGUAGE_CODE == 'ja' %}名前なしタスクを{{ blank_task_count }}件削除{% else %}Delete {{ blank_task_count }} untitled task{% if blank_task_count != 1 %}s{% endif %}{% endif %}</button>
+  </form>
+  {% endif %}
+
+  {% for task in tasks %}
+  <div class="text">
+    <h2><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h2>
+    <ul>
+      <li>{% if request.LANGUAGE_CODE == 'ja' %}投稿日時{% else %}Posted at{% endif %}: {{ task.posted_at }}</li>
+      {% if task.due_at %}
+      <li>{% if request.LANGUAGE_CODE == 'ja' %}期限{% else %}Due at{% endif %}: {{ task.due_at }}</li>
+      {% endif %}
+      {% if task.completed %}
+      <li>{% if request.LANGUAGE_CODE == 'ja' %}状態: 完了{% else %}Status: Completed{% endif %}</li>
+      {% else %}
+      <li>{% if request.LANGUAGE_CODE == 'ja' %}状態: 未完了{% else %}Status: Not Completed{% endif %}</li>
+      {% endif %}
+    </ul>
+  </div>
+  {% endfor %}
+{% endblock %}

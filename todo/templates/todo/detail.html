@@ -1,36 +1,27 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ja">
+{% extends "todo/base.html" %}
 
-  <head>
-    <title>To Do Application</title>
-    <meta charset="UTF-8">
-    <meta name="author" content="INIAD">
-    <link rel="stylesheet" href="{% static 'todo/style.css' %}">
-  </head>
+{% block title %}To Do Application{% endblock %}
 
-  <body>
-    <h1>{{ task.title }}</h1>
-    <ul>
-      <li>Posted at: {{ task.posted_at }}</li>
-      {% if task.due_at %}
-      <li>Due at: {{ task.due_at }}</li>
-      {% endif %}
-      {% if task.completed %}
-      <li>Status: Completed</li>
-      {% else %}
-      <li>Status: Not Completed</li>
-      {% endif %}
-    </ul>
-    <div>
-      <p>
-        <a href="{% url 'index' %}">Top</a> /
-        <a href="{% url 'close' task.id %}">Close</a> /
-        <a href="{% url 'update' task.id %}">Edit</a> /
-        <a href="{% url 'delete' task.id %}">Delete</a> /
-      </p>
+{% block content %}
+  <h1>{{ task.title }}</h1>
+  <ul>
+    <li>{% if request.LANGUAGE_CODE == 'ja' %}投稿日時{% else %}Posted at{% endif %}: {{ task.posted_at }}</li>
+    {% if task.due_at %}
+    <li>{% if request.LANGUAGE_CODE == 'ja' %}期限{% else %}Due at{% endif %}: {{ task.due_at }}</li>
+    {% endif %}
+    {% if task.completed %}
+    <li>{% if request.LANGUAGE_CODE == 'ja' %}状態: 完了{% else %}Status: Completed{% endif %}</li>
+    {% else %}
+    <li>{% if request.LANGUAGE_CODE == 'ja' %}状態: 未完了{% else %}Status: Not Completed{% endif %}</li>
+    {% endif %}
+  </ul>
+  <div>
+    <p>
+      <a href="{% url 'index' %}">{% if request.LANGUAGE_CODE == 'ja' %}トップへ{% else %}Top{% endif %}</a> /
+      <a href="{% url 'close' task.id %}">{% if request.LANGUAGE_CODE == 'ja' %}完了にする{% else %}Close{% endif %}</a> /
+      <a href="{% url 'update' task.id %}">{% if request.LANGUAGE_CODE == 'ja' %}編集{% else %}Edit{% endif %}</a> /
+      <a href="{% url 'delete' task.id %}">{% if request.LANGUAGE_CODE == 'ja' %}削除{% else %}Delete{% endif %}</a> /
+    </p>
 
-    </div>
-  </body>
-
-</html>
+  </div>
+{% endblock %}
