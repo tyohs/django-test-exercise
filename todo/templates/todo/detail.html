@@ -23,10 +23,13 @@
       {% endif %}
     </ul>
     <div>
-      <a href="{% url 'index' %}">Top</a>
-      <a href="{% url 'close' task.id %}">Close</a>
-      <a href="{% url 'update' task.id %}">Edit</a>
-      <a href="{% url 'delete' task.id %}">Delete/</a>
+      <p>
+        <a href="{% url 'index' %}">Top</a> /
+        <a href="{% url 'close' task.id %}">Close</a> /
+        <a href="{% url 'update' task.id %}">Edit</a> /
+        <a href="{% url 'delete' task.id %}">Delete</a> /
+      </p>
+
     </div>
   </body>
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import Http404
+from django.http import Http404, HttpResponseNotAllowed
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from django.utils.timezone import make_aware
@@ -32,11 +32,14 @@ def index(request):
     else:
         tasks = tasks.order_by('-posted_at')
 
+    blank_task_count = Task.objects.filter(title='').count()
+
     context = {
         'tasks': tasks,
         'status': status,
         'query': query,
         'order': request.GET.get('order', 'post'),
+        'blank_task_count': blank_task_count,
     }
     return render(request, 'todo/index.html', context)
 
@@ -58,6 +61,14 @@ def delete(request, task_id):
     except Task.DoesNotExist:
         raise Http404("Task does not exist")
     task.delete()
+    return redirect(index)
+
+
+def delete_blank(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    Task.objects.filter(title='').delete()
     return redirect(index)
   
 def update(request, task_id):
