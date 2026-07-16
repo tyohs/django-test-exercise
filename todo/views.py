@@ -55,6 +55,22 @@ def detail(request, task_id):
     }
     return render(request, 'todo/detail.html', context)
 
+
+def react(request, task_id):
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        raise Http404("Task does not exist")
+
+    if request.method == 'POST':
+        reaction = request.POST.get('reaction')
+        if reaction in {'like', 'love', 'wow'}:
+            setattr(task, f'{reaction}_count', getattr(task, f'{reaction}_count') + 1)
+            task.save(update_fields=[f'{reaction}_count'])
+
+    return redirect(index)
+
+
 def delete(request, task_id):
     try:
         task = Task.objects.get(pk=task_id)
