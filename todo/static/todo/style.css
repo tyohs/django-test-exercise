@@ -26,7 +26,8 @@ label {
   font-weight: bold;
 }
 
-input {
+input,
+select {
   box-sizing: border-box;
   width: 100%;
   margin: 6px 0 14px;

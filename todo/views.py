@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import Http404
 from django.utils.dateparse import parse_datetime
+from django.utils import timezone
 from django.utils.timezone import make_aware
 
 from todo.models import Task
@@ -12,13 +13,30 @@ def index(request):
                     due_at=make_aware(parse_datetime(request.POST['due_at'])))
         task.save()
 
+    tasks = Task.objects.all()
+    status = request.GET.get('status', 'all')
+    query = request.GET.get('q', '').strip()
+
+    if status == 'incomplete':
+        tasks = tasks.filter(completed=False)
+    elif status == 'completed':
+        tasks = tasks.filter(completed=True)
+    elif status == 'overdue':
+        tasks = tasks.filter(completed=False, due_at__lt=timezone.now())
+
+    if query:
+        tasks = tasks.filter(title__icontains=query)
+
     if request.GET.get('order') == 'due':
-        tasks = Task.objects.order_by('due_at')
+        tasks = tasks.order_by('due_at')
     else:
-        tasks = Task.objects.order_by('-posted_at')
+        tasks = tasks.order_by('-posted_at')
 
     context = {
-        'tasks': tasks
+        'tasks': tasks,
+        'status': status,
+        'query': query,
+        'order': request.GET.get('order', 'post'),
     }
     return render(request, 'todo/index.html', context)
 

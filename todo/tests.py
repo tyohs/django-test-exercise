@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.test import TestCase, Client
 from django.utils import timezone
@@ -98,6 +98,49 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'todo/index.html')
         self.assertEqual(response.context['tasks'][0], task1)
         self.assertEqual(response.context['tasks'][1], task2)
+
+    def test_index_get_filter_incomplete(self):
+        incomplete = Task.objects.create(title='incomplete task')
+        Task.objects.create(title='completed task', completed=True)
+
+        response = Client().get('/?status=incomplete')
+
+        self.assertEqual(list(response.context['tasks']), [incomplete])
+
+    def test_index_get_filter_completed(self):
+        Task.objects.create(title='incomplete task')
+        completed = Task.objects.create(title='completed task', completed=True)
+
+        response = Client().get('/?status=completed')
+
+        self.assertEqual(list(response.context['tasks']), [completed])
+
+    def test_index_get_filter_overdue(self):
+        overdue = Task.objects.create(
+            title='overdue task',
+            due_at=timezone.now() - timedelta(days=1),
+        )
+        Task.objects.create(
+            title='future task',
+            due_at=timezone.now() + timedelta(days=1),
+        )
+        Task.objects.create(
+            title='completed overdue task',
+            completed=True,
+            due_at=timezone.now() - timedelta(days=1),
+        )
+
+        response = Client().get('/?status=overdue')
+
+        self.assertEqual(list(response.context['tasks']), [overdue])
+
+    def test_index_get_search_title(self):
+        matching = Task.objects.create(title='Buy Milk')
+        Task.objects.create(title='Write report')
+
+        response = Client().get('/?q=milk')
+
+        self.assertEqual(list(response.context['tasks']), [matching])
 
     def test_detail_get_success(self):
         task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
