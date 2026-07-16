@@ -21,7 +21,14 @@
       {% else %}
       <li>Status: Not Completed</li>
       {% endif %}
+      <li>Reactions: 👍 {{ task.like_count }} / ❤️ {{ task.love_count }} / 😮 {{ task.wow_count }}</li>
     </ul>
+    <form action="{% url 'react' task.id %}" method="post">
+      {% csrf_token %}
+      <button type="submit" name="reaction" value="like">👍</button>
+      <button type="submit" name="reaction" value="love">❤️</button>
+      <button type="submit" name="reaction" value="wow">😮</button>
+    </form>
     <div>
       <a href="{% url 'index' %}">Top</a>
       <a href="{% url 'close' task.id %}">Close</a>

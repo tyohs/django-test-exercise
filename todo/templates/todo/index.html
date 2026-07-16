@@ -66,6 +66,12 @@
         <li>Status: Not Completed</li>
         {% endif %}
       </ul>
+      <form action="{% url 'react' task.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" name="reaction" value="like">👍 {{ task.like_count }}</button>
+        <button type="submit" name="reaction" value="love">❤️ {{ task.love_count }}</button>
+        <button type="submit" name="reaction" value="wow">😮 {{ task.wow_count }}</button>
+      </form>
     </div>
     {% endfor %}
   </body>
