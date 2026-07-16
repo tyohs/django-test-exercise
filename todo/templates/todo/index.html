@@ -28,10 +28,29 @@
     </form>
     <br>
 
-    <div>
-      <a href="{% url 'index' %}?order=due">Sort by Due Date</a> |
-      <a href="{% url 'index' %}?order=post">Sort by Posted Date</a>
-    </div>
+    <form action="{% url 'index' %}" method="get">
+      <div>
+        <label for="searchInput">Search</label><br>
+        <input id="searchInput" name="q" type="search" value="{{ query }}" placeholder="Search by title">
+      </div>
+      <div>
+        <label for="statusInput">Status</label><br>
+        <select id="statusInput" name="status">
+          <option value="all" {% if status == 'all' %}selected{% endif %}>All</option>
+          <option value="incomplete" {% if status == 'incomplete' %}selected{% endif %}>Not Completed</option>
+          <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
+          <option value="overdue" {% if status == 'overdue' %}selected{% endif %}>Overdue</option>
+        </select>
+      </div>
+      <div>
+        <label for="orderInput">Sort</label><br>
+        <select id="orderInput" name="order">
+          <option value="post" {% if order == 'post' %}selected{% endif %}>Posted Date</option>
+          <option value="due" {% if order == 'due' %}selected{% endif %}>Due Date</option>
+        </select>
+      </div>
+      <button type="submit">Apply</button>
+    </form>
 
     {% for task in tasks %}
     <div class="text">
