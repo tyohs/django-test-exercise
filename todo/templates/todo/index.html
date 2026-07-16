@@ -52,6 +52,13 @@
       <button type="submit">Apply</button>
     </form>
 
+    {% if blank_task_count %}
+    <form action="{% url 'delete_blank' %}" method="post" style="margin-top: 1rem;">
+      {% csrf_token %}
+      <button type="submit">Delete {{ blank_task_count }} untitled task{% if blank_task_count != 1 %}s{% endif %}</button>
+    </form>
+    {% endif %}
+
     {% for task in tasks %}
     <div class="text">
       <h2><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h2>
