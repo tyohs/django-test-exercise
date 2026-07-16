@@ -221,3 +221,30 @@ class TodoViewTestCase(TestCase):
         task = Task.objects.get(pk=task.pk)
         self.assertEqual(task.title, 'updated task')
         self.assertEqual(task.due_at, timezone.make_aware(datetime(2024, 7, 2, 12, 34, 56)))
+
+    def test_reaction_post_success(self):
+        task = Task.objects.create(title='task1')
+        client = Client()
+
+        response = client.post('/{}/react/'.format(task.pk), {'reaction': 'like'})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/')
+
+        task.refresh_from_db()
+        self.assertEqual(task.like_count, 1)
+        self.assertEqual(task.love_count, 0)
+        self.assertEqual(task.wow_count, 0)
+
+    def test_reaction_post_updates_all_reaction_counts(self):
+        task = Task.objects.create(title='task1')
+        client = Client()
+
+        client.post('/{}/react/'.format(task.pk), {'reaction': 'like'})
+        client.post('/{}/react/'.format(task.pk), {'reaction': 'love'})
+        client.post('/{}/react/'.format(task.pk), {'reaction': 'wow'})
+
+        task.refresh_from_db()
+        self.assertEqual(task.like_count, 1)
+        self.assertEqual(task.love_count, 1)
+        self.assertEqual(task.wow_count, 1)
